@@ -1,0 +1,160 @@
+body
+{
+  background-image: url("../img/bg.jpg");
+  background-position: center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment: fixed;
+}
+.wrapper
+{
+  position:fixed;
+  overflow-y:auto;
+  left:0;
+  top:0;
+  width:100%;
+  box-sizing:border-box;
+  height:100%;
+  background-color:rgba(0,0,0,0.9);
+  padding-bottom:50px;
+}
+
+.brand-icon
+{
+  width:40px;
+}
+
+.navbar-brand
+{
+  padding-top:5px;
+}
+
+.nav-btns
+{
+  font-size:12px;
+  color:#fff;
+  transition:ease-in-out 0.4s;
+  letter-spacing:1px;
+}
+
+.nav-btns:hover
+{ 
+  color:#000;
+  letter-spacing:0px;
+}
+
+.navbar-inversed
+{
+  
+  background-color:rgb(90,180,20);
+  border-radius:5px;
+  border-top:3px solid rgb(90,180,20);
+  border-bottom:3px solid rgb(90,180,20);
+}
+
+.btn-download
+{
+  float:left;
+  box-sizing:border-box;
+  width:100%;
+  color:#fff;
+  padding:10px;
+  background-color:rgb(90,180,20);
+  text-align:center;
+  transition:ease-in-out 0.4s;
+  border-radius:3px;
+}
+
+.btn-download:hover
+{
+  text-decoration: none;
+  background-color:rgb(200,110,50);
+  color:#fff;
+  box-shadow:0px 0px 3px #555;
+}
+
+.aboutdiv
+{
+  float:left;
+  box-sizing:border-box;
+  width:100%;
+  padding:20px;
+  color:#fff;
+}
+
+.panel-input
+{
+  float:left;
+  box-sizing:border-box;
+  width:100%;
+  background-color:transparent;
+  padding:13px;
+  margin-bottom: 10px;
+  color:#fff;
+  transition: ease-in-out 0.3s;
+  border:none;
+  background-color:rgba(255,255,255,0.2);
+}
+
+.panel-input:focus
+{
+  background-color:rgba(255,255,255,0.3);
+}
+
+.apk-wrapper
+{
+  float:left;
+  box-sizing:border-box;
+  width:100%;
+  position:relative;
+  height:100px;
+  transition:ease-in-out 0.5s;
+  background-color:rgba(0,150,255,0.1);
+  margin-bottom:10px;
+}
+
+.apk-wrapper:hover
+{
+  background-color:rgba(0,150,255,0.5);
+}
+
+.file-apk
+{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  cursor:pointer;
+}
+
+.apk-overlay
+{
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  color:#fff;
+  height:100%;
+  text-align:center;
+  line-height:80px;
+}
+
+.button-submit
+{
+  float:left;
+  box-sizing:border-box;
+  width:100%;
+  padding:17px;
+  margin-top:20px;
+  background-color:rgba(255,255,255,0.2);
+  color:#fff;
+  transition:ease-in-out 0.5s;
+  border:none;
+}
+
+.button-submit:hover
+{
+  background-color:rgba(0,150,255,0.8);
+}
