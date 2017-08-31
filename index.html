@@ -1,0 +1,131 @@
+<?php
+include 'config.php';
+?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   
+    <title>Mining APK</title>
+    <link rel='stylesheet' href='asset/bootstrap/css/bootstrap.min.css'/>
+    <link rel='stylesheet' href='asset/fontawesome/css/font-awesome.min.css'/>
+    <link rel='stylesheet' href='asset/style.css'/>
+    <script src='asset/jquery/jquery.js'></script>
+    <script src='asset/parallax/parallax.min.js'></script>
+    <script src='asset/bootstrap/js/bootstrap.min.js'></script>
+    <script src='asset/scrollreveal/scrollreveal.min.js'></script>
+    <script src='asset/script.js'></script>
+  </head>
+  
+  <body>
+    <div class='wrapper'>
+      <div class='container'>
+        <div class='row'>
+          <div class='col-md-12'>
+            <h1 style='color:#ddd;padding:20px;'>Mrliputo.github</h1>
+            
+            <nav class="navbar navbar-inversed">
+              <div class="container-fluid">
+                <div class="navbar-header">
+                  <button type="button" class="navbar-toggle collapsed" style='color:#fff;' data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class='fa fa-bars'></span>
+                  </button>
+                  <a class="navbar-brand" href="index.php"><img class='brand-icon' src='img/icon.png'></a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                  <ul class="nav navbar-nav">
+                    <li><a href="javascript:void(0)" id="download" class='nav-btns'><span class='glyphicon glyphicon-download-alt'></span> Download APK</a></li>
+                    <li><a href="javascript:void(0)" id="about"class='nav-btns'><span class='glyphicon glyphicon-info-sign'></span> About Me</a></li>
+                  </ul>
+                </div>
+              </div>
+            </nav>
+            <div class="col-md-12">
+              <div class='col-md-12' id="display">
+                <h2 style="color:#ddd;"><span class="fa fa-download"></span> Download</h2>
+                <table class='table table-responsive ' style='color:#fff;text-align:left;'>
+                  <thead>
+                    <tr>
+                      <th style='text-align: center'><span class='fa fa-hashtag'></span></th>
+                      <th style='text-align: center'><span class='fa fa-android'></span></th>
+                      <th style='text-align: center'><span class='fa fa-code'></span></th>
+                      <th style='text-align: center'><span class='fa fa-calendar'></span></th>
+                      <th style='text-align: center'><span class='fa fa-download'></span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="tBody">
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+  $(document).ready(function(){
+    $.getJSON("http://sub4sub.xyz/github/table.php",function(jsonData){
+      d = jsonData;
+      var name = "";
+      var x;
+      var num =1;
+    for(var i in jsonData)
+      {
+      
+        var blank;
+        if(i > 0)
+        {
+          if(name !== jsonData[i].name)
+          {
+            x +=  '<tr style=\'text-align: center;color:rgb(90,180,20);background-color:transparent;border:none;\'>'+
+'                    <td style=\'padding:17px;\'></td>'+
+'                    <td style=\'padding:17px;\'></td>'+
+'                    <td style=\'padding:17px;\'></td>'+
+'                    <td style=\'padding:17px;\'></td>'+
+'                    <td style=\'padding:17px;\'></td>'+
+'                  </tr>';
+          }
+          
+        }
+          name = jsonData[i].name;
+        // "<h1>" + jsonData[i].name + "</h1>";
+        if($.trim(jsonData[i].link) === "" && $.trim(jsonData[i].apk) === "")
+        {
+          blank = "Link Unavailable";
+        }
+        else if($.trim(jsonData[i].link) !== "" && $.trim(jsonData[i].apk) === "")
+        {
+          blank = "<a href="+jsonData[i].link+" class='btn btn-info btn-xs'><span class='fa fa-download'></span> Mirror Download</a>";
+        }  
+        else if($.trim(jsonData[i].link) === "" && $.trim(jsonData[i].apk) !== "")
+        {
+          blank = "<a href='http://sub4sub.xyz/public/"+jsonData[i].apk+"' class='btn btn-warning btn-xs'><span class='fa fa-download'></span> Direct Download</a>";
+        }
+        else
+        {
+          blank = "<a href="+jsonData[i].link+" class='btn btn-info btn-xs'><span class='fa fa-download'></span> Mirror Download</a>\n\
+                                . <a href='http://sub4sub.xyz/public/"+jsonData[i].apk+"' class='btn btn-warning btn-xs'><span class='fa fa-download'></span> Direct Download</a>";
+        }
+       
+x +=  '<tr style=\'text-align: center;color:rgb(90,180,20);background-color:rgba(255,255,255,0.2);\'>'+
+'                    <td style=\'padding:17px;\'>'+jsonData[i].id+'</td>'+
+'                    <td style=\'padding:17px;\'>'+jsonData[i].name+'</td>'+
+'                    <td style=\'padding:17px;\'>'+jsonData[i].ver+'</td>'+
+'                    <td style=\'padding:17px;\'>'+jsonData[i].date+'</td>'+
+'                    <td style=\'padding:17px;\'>'+blank+'</td>'+
+'                  </tr>';
+	
+num++;
+      
+    }
+     $("#tBody").append(x);
+    });
+  });
+  var d;
+</script>
+  </body>
+  
+</html>
