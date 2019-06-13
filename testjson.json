@@ -1,5 +1,6 @@
 {
   "status": "true",
+  "statusupdate": "true",
   "action": "market",
   "link": "com.facebook.katana",
   "msg": "update"
