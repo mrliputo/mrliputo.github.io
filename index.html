@@ -51,7 +51,7 @@
 	text-align:center;
   font-size:30px;
 	box-shadow: 2px 2px 3px #999;
-  z-index:100;
+  z-index:0;
 }
 
 .my-float{
@@ -93,6 +93,8 @@
 }
 
 .nav-bottom {
+ 
+ 
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -289,7 +291,9 @@ input.whats-input[type=text]:focus {
 
 	</style>
 
-<div class="nav-bottom">
+<div class="nav-bottom" style="
+    right: 25px;
+">
             <div class="popup-whatsapp fadeIn">
                 <div class="content-whatsapp -top"><button type="button" class="closePopup">
                       <i class="material-icons icon-font-color">close</i>
