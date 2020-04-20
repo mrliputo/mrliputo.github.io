@@ -1,0 +1,124 @@
+{
+  "Background": {
+    "height": 0.3,
+    "color": "#FFC008"
+  },
+  "HorizonLayout": [
+    {
+      "layout": "logo",
+      "hideLogo": true
+    },
+    {
+      "layout": "header_text",
+      "fontSize": 20.0,
+      "title": "FluxStore",
+      "height": 0.07,
+      "rotate": [
+        "WooCommerce",
+        "Magento",
+        "Opencart"
+      ],
+      "type": "rotate",
+      "showSearch": true
+    },
+    {
+      "layout": "category",
+      "type": "icon",
+      "wrap": true,
+      "size": 1.2,
+      "radius": 9.0,
+      "background": "#FFFFFF",
+      "columns": 2,
+      "shadow": 20.0,
+      "border": 0.5,
+      "padding": 0.0,
+      "items": [
+        {
+          "category": 23,
+          "image": "assets/icons/categories/i_package.png",
+          "colors": [
+            "#2B2F3E",
+            "#333333"
+          ],
+          "noBackground": true
+        },
+        {
+          "category": 25,
+          "image": "assets/icons/categories/i_shopping.png",
+          "colors": [
+            "#2B2F3E",
+            "#333333"
+          ],
+          "noBackground": true
+        },
+        {
+          "category": 26,
+          "image": "assets/icons/categories/i_snow.png",
+          "colors": [
+            "#2B2F3E",
+            "#333333"
+          ],
+          "noBackground": true
+        },
+        {
+          "category": 27,
+          "image": "assets/icons/categories/i_truck.png",
+          "colors": [
+            "#2B2F3E",
+            "#333333"
+          ],
+          "noBackground": true
+        },
+        {
+          "category": 28,
+          "image": "assets/icons/categories/i-air.png",
+          "colors": [
+            "#2B2F3E",
+            "#333333"
+          ],
+          "noBackground": true
+        },
+        {
+          "category": 29,
+          "image": "assets/icons/categories/i_instagram.png",
+          "colors": [
+            "#2B2F3E",
+            "#333333"
+          ],
+          "noBackground": true
+        }
+      ]
+    },
+    {
+      "name": "Our Blog Posts",
+      "layout": "blog"
+    }
+  ],
+  "Setting": {
+    "MainColor": "#3FC1BE",
+    "ProductListLayout": "list"
+  },
+  "TabBar": [
+    {
+      "layout": "home",
+      "icon": "assets/icons/tabs/icon-home.png"
+    },
+    {
+      "layout": "category",
+      "categoryLayout": "card",
+      "icon": "assets/icons/tabs/icon-category.png"
+    },
+    {
+      "layout": "search",
+      "icon": "assets/icons/tabs/icon-search.png"
+    },
+    {
+      "layout": "cart",
+      "icon": "assets/icons/tabs/icon-cart2.png"
+    },
+    {
+      "layout": "profile",
+      "icon": "assets/icons/tabs/icon-user.png"
+    }
+  ]
+}
