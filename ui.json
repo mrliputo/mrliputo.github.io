@@ -1,99 +1,39 @@
 {
-  "Background": {
-    "height": 0.3,
-    "color": "#FFC008"
-  },
   "HorizonLayout": [
     {
-      "layout": "logo",
-      "hideLogo": true
-    },
-    {
-      "layout": "header_text",
-      "fontSize": 20.0,
-      "title": "FluxStore",
-      "height": 0.07,
-      "rotate": [
-        "WooCommerce",
-        "Magento",
-        "Opencart"
-      ],
-      "type": "rotate",
-      "showSearch": true
-    },
-    {
-      "layout": "category",
-      "type": "icon",
-      "wrap": true,
-      "size": 1.2,
-      "radius": 9.0,
-      "background": "#FFFFFF",
-      "columns": 2,
-      "shadow": 20.0,
-      "border": 0.5,
-      "padding": 0.0,
+      "layout": "bannerImage",
+      "isSlider": true,
+      "showBackground": true,
+      "isBlur": true,
+      "padding": 20.0,
+      "radius": 20.0,
+
+      "title": "Fluxstore Collections",
+      "fontSize": 26.0,
+      "isSafeArea": true,
+      "showSearch": true,
+
       "items": [
         {
-          "category": 23,
-          "image": "assets/icons/categories/i_package.png",
-          "colors": [
-            "#2B2F3E",
-            "#333333"
-          ],
-          "noBackground": true
+          "category": 25,
+          "image": "https://user-images.githubusercontent.com/1459805/62834035-2899b880-bc71-11e9-9ed8-4ce1790e0460.jpg"
         },
         {
-          "category": 25,
-          "image": "assets/icons/categories/i_shopping.png",
-          "colors": [
-            "#2B2F3E",
-            "#333333"
-          ],
-          "noBackground": true
+          "category": 23,
+          "image": "https://user-images.githubusercontent.com/1459805/62834034-2899b880-bc71-11e9-956b-64e6d0c35d46.jpg"
         },
         {
           "category": 26,
-          "image": "assets/icons/categories/i_snow.png",
-          "colors": [
-            "#2B2F3E",
-            "#333333"
-          ],
-          "noBackground": true
-        },
-        {
-          "category": 27,
-          "image": "assets/icons/categories/i_truck.png",
-          "colors": [
-            "#2B2F3E",
-            "#333333"
-          ],
-          "noBackground": true
-        },
-        {
-          "category": 28,
-          "image": "assets/icons/categories/i-air.png",
-          "colors": [
-            "#2B2F3E",
-            "#333333"
-          ],
-          "noBackground": true
-        },
-        {
-          "category": 29,
-          "image": "assets/icons/categories/i_instagram.png",
-          "colors": [
-            "#2B2F3E",
-            "#333333"
-          ],
-          "noBackground": true
+          "image": "https://user-images.githubusercontent.com/1459805/62834036-29324f00-bc71-11e9-9262-af0b8ceeba87.jpg"
         }
       ]
-    },
-    {
-      "name": "Our Blog Posts",
-      "layout": "blog"
     }
   ],
+
+  "VerticalLayout": {
+    "layout": "menu",
+    "name": "Recent Collections"
+  },
   "Setting": {
     "MainColor": "#3FC1BE",
     "ProductListLayout": "list"
