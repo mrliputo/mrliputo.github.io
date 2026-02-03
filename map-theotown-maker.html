@@ -172,7 +172,14 @@
     <input id="seed" value="12345678">
 
     <label id="lblSize">Map Size (grid)</label>
-    <input id="size" type="number" value="12" min="4">
+    <div style="display: flex; gap: 10px;">
+        <label style="flex: 1;"><span id="lblWidth">Width</span>
+            <input id="sizeWidth" type="number" value="12" min="4">
+        </label>
+        <label style="flex: 1;"><span id="lblHeight">Height</span>
+            <input id="sizeHeight" type="number" value="12" min="4">
+        </label>
+    </div>
 
     <label><input type="checkbox" id="desert"> Desert</label>
     <label><input type="checkbox" id="terrain"> Terrain</label>
@@ -189,6 +196,17 @@
         <label id="lblBlockSize">Ukuran Blok
             <input type="number" id="blockSize" min="1" value="2" onchange="updateBlockSize()">
         </label>
+        <label style="margin-top: 8px;"><input type="checkbox" id="randomSize"> <span id="lblRandomSize">Random Size</span></label>
+        <div id="randomSizeRange" style="display: none; margin-top: 8px;">
+            <div style="display: flex; gap: 10px;">
+                <label style="flex: 1;"><span id="lblMinSize">Min</span>
+                    <input type="number" id="minSize" min="1" value="1" style="width: 100%;">
+                </label>
+                <label style="flex: 1;"><span id="lblMaxSize">Max</span>
+                    <input type="number" id="maxSize" min="1" value="6" style="width: 100%;">
+                </label>
+            </div>
+        </div>
     </div>
 
     <label id="lblBlockList">Daftar Blok</label>
@@ -250,7 +268,8 @@
 </div>
 
 <script>
-    let size = 12;
+    let sizeW = 12;
+    let sizeH = 12;
     let cellSize = 40;
     let blocks = [];
     let drag = null;
@@ -265,10 +284,13 @@
             lblName: "Nama Wilayah",
             lblSeed: "Seed",
             lblSize: "Ukuran Peta (grid)",
+            lblWidth: "Lebar",
+            lblHeight: "Tinggi",
             btnAdd: "➕ Tambah",
             btnDelete: "🗑️ Hapus",
             lblEditBlock: "📐 Edit Blok Terpilih",
             lblBlockSize: "Ukuran Blok",
+            lblRandomSize: "Ukuran Acak",
             lblBlockList: "Daftar Blok",
             btnGenerate: "📄 Generate Text",
             btnReset: "🔄 Reset Semua",
@@ -284,10 +306,13 @@
             lblName: "Region Name",
             lblSeed: "Seed",
             lblSize: "Map Size (grid)",
+            lblWidth: "Width",
+            lblHeight: "Height",
             btnAdd: "➕ Add",
             btnDelete: "🗑️ Delete",
             lblEditBlock: "📐 Edit Selected Block",
             lblBlockSize: "Block Size",
+            lblRandomSize: "Random Size",
             lblBlockList: "Block List",
             btnGenerate: "📄 Generate Text",
             btnReset: "🔄 Reset All",
@@ -788,16 +813,21 @@
         document.getElementById("lblName").textContent = t.lblName;
         document.getElementById("lblSeed").textContent = t.lblSeed;
         document.getElementById("lblSize").textContent = t.lblSize;
+        document.getElementById("lblWidth").textContent = t.lblWidth || "Width";
+        document.getElementById("lblHeight").textContent = t.lblHeight || "Height";
         document.getElementById("btnAdd").textContent = t.btnAdd;
         document.getElementById("btnDelete").textContent = t.btnDelete;
         document.getElementById("lblEditBlock").textContent = t.lblEditBlock;
         document.getElementById("lblBlockSize").childNodes[0].textContent = t.lblBlockSize + " ";
+        document.getElementById("lblRandomSize").textContent = t.lblRandomSize || "Random Size";
         document.getElementById("lblBlockList").textContent = t.lblBlockList;
         document.getElementById("btnGenerate").textContent = t.btnGenerate;
+        document.getElementById("btnReset").textContent = t.btnReset || "🔄 Reset All";
         document.getElementById("lblCityCount").textContent = t.lblCityCount;
         document.getElementById("lblOutput").textContent = t.lblOutput;
 
         updateBlockList();
+        saveToStorage();
     }
 
     const gridContainer = document.getElementById("gridContainer");
@@ -812,12 +842,18 @@
 
     // Hitung ukuran cell berdasarkan ukuran map agar muat dalam container
     function calculateCellSize() {
-        const containerSize = 580; // Ukuran maksimal grid
-        size = parseInt(document.getElementById("size").value) || 12;
-        size = Math.max(4, size); // Minimal 4
+        const containerW = 580;
+        const containerH = 580;
+        sizeW = parseInt(document.getElementById("sizeWidth").value) || 12;
+        sizeH = parseInt(document.getElementById("sizeHeight").value) || 12;
+        sizeW = Math.max(4, sizeW);
+        sizeH = Math.max(4, sizeH);
 
-        cellSize = Math.floor(containerSize / size);
-        cellSize = Math.max(cellSize, 4); // Minimal 4px per cell agar tetap terlihat
+        // Hitung cell size berdasarkan dimensi terbesar
+        const cellW = Math.floor(containerW / sizeW);
+        const cellH = Math.floor(containerH / sizeH);
+        cellSize = Math.min(cellW, cellH);
+        cellSize = Math.max(cellSize, 4); // Minimal 4px per cell
     }
 
     function buildGrid() {
@@ -826,14 +862,14 @@
         // Hapus cells lama
         grid.innerHTML = "";
 
-        grid.style.gridTemplateColumns = `repeat(${size}, ${cellSize}px)`;
-        grid.style.width = size * cellSize + "px";
-        grid.style.height = size * cellSize + "px";
+        grid.style.gridTemplateColumns = `repeat(${sizeW}, ${cellSize}px)`;
+        grid.style.width = sizeW * cellSize + "px";
+        grid.style.height = sizeH * cellSize + "px";
 
         // Buat cells - untuk ukuran sangat besar, gunakan border lebih tipis
         const borderStyle = cellSize <= 6 ? '0.5px solid #ddd' : '1px solid #ccc';
 
-        for (let i = 0; i < size * size; i++) {
+        for (let i = 0; i < sizeW * sizeH; i++) {
             const c = document.createElement("div");
             c.className = "cell";
             c.style.width = cellSize + "px";
@@ -847,14 +883,14 @@
             grid.appendChild(b.element);
 
             // Pastikan blok tidak keluar dari grid
-            const maxX = size - b.w;
-            const maxY = size - b.h;
+            const maxX = sizeW - b.w;
+            const maxY = sizeH - b.h;
             b.x = Math.min(b.x, Math.max(0, maxX));
             b.y = Math.min(b.y, Math.max(0, maxY));
 
             // Jika ukuran blok lebih besar dari grid, perkecil
-            if (b.w > size) b.w = size;
-            if (b.h > size) b.h = size;
+            if (b.w > sizeW) b.w = sizeW;
+            if (b.h > sizeH) b.h = sizeH;
 
             updateBlockPosition(b);
         });
@@ -901,8 +937,8 @@
 
     // Cari posisi kosong untuk blok baru
     function findEmptyPosition(w, h) {
-        for (let y = 0; y <= size - h; y++) {
-            for (let x = 0; x <= size - w; x++) {
+        for (let y = 0; y <= sizeH - h; y++) {
+            for (let x = 0; x <= sizeW - w; x++) {
                 if (!isPositionOccupied(x, y, w, h)) {
                     return { x, y };
                 }
@@ -912,14 +948,24 @@
     }
 
     function addBlock() {
+        // Cek apakah random size aktif
+        const isRandomSize = document.getElementById("randomSize").checked;
+
         // Ambil size dari blok terakhir, default 2
         let lastSize = 2;
         if (blocks.length > 0) {
             lastSize = blocks[blocks.length - 1].w;
         }
 
+        // Jika random size, generate ukuran random berdasarkan range
+        if (isRandomSize) {
+            const minSize = Math.max(1, parseInt(document.getElementById("minSize").value) || 1);
+            const maxSize = Math.max(minSize, parseInt(document.getElementById("maxSize").value) || 6);
+            lastSize = Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
+        }
+
         // Pastikan ukuran tidak lebih besar dari grid
-        lastSize = Math.min(lastSize, size);
+        lastSize = Math.min(lastSize, sizeW, sizeH);
 
         // Cari posisi kosong
         const emptyPos = findEmptyPosition(lastSize, lastSize);
@@ -992,7 +1038,7 @@
         let newSize = parseInt(blockSizeInput.value) || 2;
 
         // Validasi ukuran agar tidak keluar grid
-        const maxSize = Math.min(size - selectedBlock.x, size - selectedBlock.y);
+        const maxSize = Math.min(sizeW - selectedBlock.x, sizeH - selectedBlock.y);
         newSize = Math.max(1, Math.min(newSize, maxSize));
 
         selectedBlock.w = newSize;
@@ -1062,8 +1108,8 @@
         let gridY = Math.round(y / cellSize);
 
         // Clamp to bounds
-        gridX = Math.max(0, Math.min(gridX, size - drag.block.w));
-        gridY = Math.max(0, Math.min(gridY, size - drag.block.h));
+        gridX = Math.max(0, Math.min(gridX, sizeW - drag.block.w));
+        gridY = Math.max(0, Math.min(gridY, sizeH - drag.block.h));
 
         drag.block.x = gridX;
         drag.block.y = gridY;
@@ -1106,12 +1152,18 @@
         const treesVal = document.getElementById("trees").checked;
         const decorationVal = document.getElementById("decoration").checked;
 
-        const text = `cr:{name:"${nameVal}", seed:"${seedVal}", "desert":${desertVal}, "terrain":${terrainVal}, "trees":${treesVal}, "decoration":${decorationVal}, size:${size}, maps: [${maps.join(",")}]}`;
+        const text = `cr:{name:"${nameVal}", seed:"${seedVal}", "desert":${desertVal}, "terrain":${terrainVal}, "trees":${treesVal}, "decoration":${decorationVal}, width:${sizeW}, height:${sizeH}, maps: [${maps.join(",")}]}`;
 
         document.getElementById("output").value = text;
     }
 
-    document.getElementById("size").onchange = buildGrid;
+    document.getElementById("sizeWidth").onchange = buildGrid;
+    document.getElementById("sizeHeight").onchange = buildGrid;
+
+    // Toggle random size range visibility
+    document.getElementById("randomSize").onchange = function() {
+        document.getElementById("randomSizeRange").style.display = this.checked ? "block" : "none";
+    };
 
     // Initialize
     buildGrid();
