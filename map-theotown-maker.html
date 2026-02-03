@@ -1110,9 +1110,16 @@
             maps.push(b.x, b.y, b.w);
         });
 
-        const text = `cr:{name:"${name.value}", seed:"${seed.value}", "desert":${desert.checked}, "terrain":${terrain.checked}, "trees":${trees.checked}, "decoration":${decoration.checked}, size:${size}, maps: [${maps.join(",")}]}`;
+        const nameVal = document.getElementById("name").value;
+        const seedVal = document.getElementById("seed").value;
+        const desertVal = document.getElementById("desert").checked;
+        const terrainVal = document.getElementById("terrain").checked;
+        const treesVal = document.getElementById("trees").checked;
+        const decorationVal = document.getElementById("decoration").checked;
 
-        output.value = text;
+        const text = `cr:{name:"${nameVal}", seed:"${seedVal}", "desert":${desertVal}, "terrain":${terrainVal}, "trees":${treesVal}, "decoration":${decorationVal}, size:${size}, maps: [${maps.join(",")}]}`;
+
+        document.getElementById("output").value = text;
     }
 
     document.getElementById("size").onchange = buildGrid;
