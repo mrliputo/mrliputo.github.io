@@ -884,17 +884,56 @@
         }
     }
 
+    // Cek apakah posisi tertentu sudah terisi oleh blok lain
+    function isPositionOccupied(x, y, w, h, excludeBlock = null) {
+        for (const block of blocks) {
+            if (block === excludeBlock) continue;
+
+            // Cek overlap
+            if (x < block.x + block.w &&
+                x + w > block.x &&
+                y < block.y + block.h &&
+                y + h > block.y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Cari posisi kosong untuk blok baru
+    function findEmptyPosition(w, h) {
+        for (let y = 0; y <= size - h; y++) {
+            for (let x = 0; x <= size - w; x++) {
+                if (!isPositionOccupied(x, y, w, h)) {
+                    return { x, y };
+                }
+            }
+        }
+        return null; // Tidak ada posisi kosong
+    }
+
     function addBlock() {
-        // Ambil size dari blok terakhir atau dari dropdown, default 2
+        // Ambil size dari blok terakhir, default 2
         let lastSize = 2;
         if (blocks.length > 0) {
             lastSize = blocks[blocks.length - 1].w;
         }
 
+        // Pastikan ukuran tidak lebih besar dari grid
+        lastSize = Math.min(lastSize, size);
+
+        // Cari posisi kosong
+        const emptyPos = findEmptyPosition(lastSize, lastSize);
+
+        if (!emptyPos) {
+            alert(translations[currentLang].alertNoSpace || "No empty space available for new block!");
+            return;
+        }
+
         const block = {
             id: ++blockIdCounter,
-            x: 0,
-            y: 0,
+            x: emptyPos.x,
+            y: emptyPos.y,
             w: lastSize,
             h: lastSize,
             element: null
