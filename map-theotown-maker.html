@@ -61,7 +61,7 @@
         }
 
         .cell {
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             background: #fff;
             box-sizing: border-box;
         }
@@ -77,9 +77,10 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            border: 2px solid #0af;
-            border-radius: 3px;
+            border: 1px solid #0af;
+            border-radius: 2px;
             user-select: none;
+            overflow: hidden;
         }
 
         .block:hover {
@@ -160,16 +161,18 @@
 <body>
 
 <div id="panel">
-    <h3>🏙️ TheoTown Region Maker</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>🏙️ TheoTown Region Maker</h3>
+    </div>
 
-    <label>Nama Wilayah</label>
+    <label id="lblName">Region Name</label>
     <input id="name" value="Test Map">
 
-    <label>Seed</label>
+    <label id="lblSeed">Seed</label>
     <input id="seed" value="12345678">
 
-    <label>Ukuran Peta (grid)</label>
-    <input id="size" type="number" value="12" min="4" max="100">
+    <label id="lblSize">Map Size (grid)</label>
+    <input id="size" type="number" value="12" min="4">
 
     <label><input type="checkbox" id="desert"> Desert</label>
     <label><input type="checkbox" id="terrain"> Terrain</label>
@@ -177,13 +180,13 @@
     <label><input type="checkbox" id="decoration" checked> Decoration</label>
 
     <div class="btn-row">
-        <button onclick="addBlock()">➕ Tambah</button>
-        <button onclick="deleteSelectedBlock()">🗑️ Hapus</button>
+        <button id="btnAdd" onclick="addBlock()">➕ Tambah</button>
+        <button id="btnDelete" onclick="deleteSelectedBlock()">🗑️ Hapus</button>
     </div>
 
     <div class="block-controls" id="blockControls">
-        <h4>📐 Edit Blok Terpilih</h4>
-        <label>Ukuran Blok
+        <h4 id="lblEditBlock">📐 Edit Blok Terpilih</h4>
+        <label id="lblBlockSize">Ukuran Blok
             <select id="blockSize" onchange="updateBlockSize()">
                 <option value="1">1x1</option>
                 <option value="2" selected>2x2</option>
@@ -195,13 +198,58 @@
         </label>
     </div>
 
-    <label>Daftar Blok</label>
+    <label id="lblBlockList">Daftar Blok</label>
     <div id="blockList"></div>
 
-    <button onclick="generate()" style="margin-top: 15px; background: #080; color: #fff; border: none;">📄 Generate Text</button>
+    <button id="btnGenerate" onclick="generate()" style="margin-top: 15px; background: #080; color: #fff; border: none;">📄 Generate Text</button>
 
-    <label>Output</label>
+    <div id="cityCount" style="margin-top: 10px; padding: 8px; background: #444; border-radius: 5px; text-align: center;">
+        🏘️ <span id="lblCityCount">Jumlah City:</span> <strong id="countValue">0</strong>
+    </div>
+
+    <label id="lblOutput">Output</label>
     <textarea id="output" rows="8"></textarea>
+
+    <div style="margin-top: 20px; padding: 10px; background: #333; border-radius: 5px; text-align: center; font-size: 12px;">
+        <label id="lblLang" style="color: #888; margin: 0;">Language</label>
+        <select id="lang" onchange="changeLanguage()" style="padding: 6px; margin: 8px 0;">
+            <option value="en" selected>🇬🇧 English</option>
+            <option value="id">🇮🇩 Indonesia</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="nl">🇳🇱 Nederlands</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="pl">🇵🇱 Polski</option>
+            <option value="uk">🇺🇦 Українська</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="hi">🇮🇳 हिन्दी</option>
+            <option value="bn">🇧🇩 বাংলা</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="ko">🇰🇷 한국어</option>
+            <option value="vi">🇻🇳 Tiếng Việt</option>
+            <option value="th">🇹🇭 ไทย</option>
+            <option value="ms">🇲🇾 Bahasa Melayu</option>
+            <option value="fil">🇵🇭 Filipino</option>
+            <option value="sv">🇸🇪 Svenska</option>
+            <option value="da">🇩🇰 Dansk</option>
+            <option value="no">🇳🇴 Norsk</option>
+            <option value="fi">🇫🇮 Suomi</option>
+            <option value="el">🇬🇷 Ελληνικά</option>
+            <option value="cs">🇨🇿 Čeština</option>
+            <option value="ro">🇷🇴 Română</option>
+            <option value="hu">🇭🇺 Magyar</option>
+            <option value="he">🇮🇱 עברית</option>
+            <option value="fa">🇮🇷 فارسی</option>
+        </select>
+        <div style="color: #888;">Created by</div>
+        <a href="https://x.com/mrliputo" target="_blank" style="color: #0af; text-decoration: none;">@mrliputo</a>
+        <div style="color: #666; margin-top: 5px;">on X (Twitter)</div>
+    </div>
 </div>
 
 <div id="gridContainer">
@@ -215,6 +263,543 @@
     let drag = null;
     let selectedBlock = null;
     let blockIdCounter = 0;
+    let currentLang = 'en';
+
+    // Terjemahan 32 bahasa
+    const translations = {
+        id: {
+            lblLang: "Bahasa",
+            lblName: "Nama Wilayah",
+            lblSeed: "Seed",
+            lblSize: "Ukuran Peta (grid)",
+            btnAdd: "➕ Tambah",
+            btnDelete: "🗑️ Hapus",
+            lblEditBlock: "📐 Edit Blok Terpilih",
+            lblBlockSize: "Ukuran Blok",
+            lblBlockList: "Daftar Blok",
+            btnGenerate: "📄 Generate Text",
+            lblCityCount: "Jumlah City:",
+            lblOutput: "Output",
+            alertSelectBlock: "Pilih blok terlebih dahulu!",
+            blockLabel: "Blok"
+        },
+        en: {
+            lblLang: "Language",
+            lblName: "Region Name",
+            lblSeed: "Seed",
+            lblSize: "Map Size (grid)",
+            btnAdd: "➕ Add",
+            btnDelete: "🗑️ Delete",
+            lblEditBlock: "📐 Edit Selected Block",
+            lblBlockSize: "Block Size",
+            lblBlockList: "Block List",
+            btnGenerate: "📄 Generate Text",
+            lblCityCount: "City Count:",
+            lblOutput: "Output",
+            alertSelectBlock: "Select a block first!",
+            blockLabel: "Block"
+        },
+        es: {
+            lblLang: "Idioma",
+            lblName: "Nombre de Región",
+            lblSeed: "Semilla",
+            lblSize: "Tamaño del Mapa (cuadrícula)",
+            btnAdd: "➕ Añadir",
+            btnDelete: "🗑️ Eliminar",
+            lblEditBlock: "📐 Editar Bloque Seleccionado",
+            lblBlockSize: "Tamaño del Bloque",
+            lblBlockList: "Lista de Bloques",
+            btnGenerate: "📄 Generar Texto",
+            lblCityCount: "Cantidad de Ciudades:",
+            lblOutput: "Salida",
+            alertSelectBlock: "¡Selecciona un bloque primero!",
+            blockLabel: "Bloque"
+        },
+        fr: {
+            lblLang: "Langue",
+            lblName: "Nom de la Région",
+            lblSeed: "Graine",
+            lblSize: "Taille de la Carte (grille)",
+            btnAdd: "➕ Ajouter",
+            btnDelete: "🗑️ Supprimer",
+            lblEditBlock: "📐 Modifier le Bloc Sélectionné",
+            lblBlockSize: "Taille du Bloc",
+            lblBlockList: "Liste des Blocs",
+            btnGenerate: "📄 Générer le Texte",
+            lblCityCount: "Nombre de Villes:",
+            lblOutput: "Sortie",
+            alertSelectBlock: "Sélectionnez d'abord un bloc!",
+            blockLabel: "Bloc"
+        },
+        de: {
+            lblLang: "Sprache",
+            lblName: "Regionsname",
+            lblSeed: "Seed",
+            lblSize: "Kartengröße (Raster)",
+            btnAdd: "➕ Hinzufügen",
+            btnDelete: "🗑️ Löschen",
+            lblEditBlock: "📐 Ausgewählten Block Bearbeiten",
+            lblBlockSize: "Blockgröße",
+            lblBlockList: "Blockliste",
+            btnGenerate: "📄 Text Generieren",
+            lblCityCount: "Stadtanzahl:",
+            lblOutput: "Ausgabe",
+            alertSelectBlock: "Wählen Sie zuerst einen Block!",
+            blockLabel: "Block"
+        },
+        it: {
+            lblLang: "Lingua",
+            lblName: "Nome Regione",
+            lblSeed: "Seme",
+            lblSize: "Dimensione Mappa (griglia)",
+            btnAdd: "➕ Aggiungi",
+            btnDelete: "🗑️ Elimina",
+            lblEditBlock: "📐 Modifica Blocco Selezionato",
+            lblBlockSize: "Dimensione Blocco",
+            lblBlockList: "Lista Blocchi",
+            btnGenerate: "📄 Genera Testo",
+            lblCityCount: "Conteggio Città:",
+            lblOutput: "Output",
+            alertSelectBlock: "Seleziona prima un blocco!",
+            blockLabel: "Blocco"
+        },
+        pt: {
+            lblLang: "Idioma",
+            lblName: "Nome da Região",
+            lblSeed: "Semente",
+            lblSize: "Tamanho do Mapa (grade)",
+            btnAdd: "➕ Adicionar",
+            btnDelete: "🗑️ Excluir",
+            lblEditBlock: "📐 Editar Bloco Selecionado",
+            lblBlockSize: "Tamanho do Bloco",
+            lblBlockList: "Lista de Blocos",
+            btnGenerate: "📄 Gerar Texto",
+            lblCityCount: "Contagem de Cidades:",
+            lblOutput: "Saída",
+            alertSelectBlock: "Selecione um bloco primeiro!",
+            blockLabel: "Bloco"
+        },
+        nl: {
+            lblLang: "Taal",
+            lblName: "Regionaam",
+            lblSeed: "Zaad",
+            lblSize: "Kaartgrootte (raster)",
+            btnAdd: "➕ Toevoegen",
+            btnDelete: "🗑️ Verwijderen",
+            lblEditBlock: "📐 Geselecteerd Blok Bewerken",
+            lblBlockSize: "Blokgrootte",
+            lblBlockList: "Blokkenlijst",
+            btnGenerate: "📄 Tekst Genereren",
+            lblCityCount: "Aantal Steden:",
+            lblOutput: "Uitvoer",
+            alertSelectBlock: "Selecteer eerst een blok!",
+            blockLabel: "Blok"
+        },
+        ru: {
+            lblLang: "Язык",
+            lblName: "Название Региона",
+            lblSeed: "Сид",
+            lblSize: "Размер Карты (сетка)",
+            btnAdd: "➕ Добавить",
+            btnDelete: "🗑️ Удалить",
+            lblEditBlock: "📐 Редактировать Выбранный Блок",
+            lblBlockSize: "Размер Блока",
+            lblBlockList: "Список Блоков",
+            btnGenerate: "📄 Сгенерировать Текст",
+            lblCityCount: "Количество Городов:",
+            lblOutput: "Вывод",
+            alertSelectBlock: "Сначала выберите блок!",
+            blockLabel: "Блок"
+        },
+        pl: {
+            lblLang: "Język",
+            lblName: "Nazwa Regionu",
+            lblSeed: "Ziarno",
+            lblSize: "Rozmiar Mapy (siatka)",
+            btnAdd: "➕ Dodaj",
+            btnDelete: "🗑️ Usuń",
+            lblEditBlock: "📐 Edytuj Wybrany Blok",
+            lblBlockSize: "Rozmiar Bloku",
+            lblBlockList: "Lista Bloków",
+            btnGenerate: "📄 Generuj Tekst",
+            lblCityCount: "Liczba Miast:",
+            lblOutput: "Wyjście",
+            alertSelectBlock: "Najpierw wybierz blok!",
+            blockLabel: "Blok"
+        },
+        uk: {
+            lblLang: "Мова",
+            lblName: "Назва Регіону",
+            lblSeed: "Сід",
+            lblSize: "Розмір Карти (сітка)",
+            btnAdd: "➕ Додати",
+            btnDelete: "🗑️ Видалити",
+            lblEditBlock: "📐 Редагувати Вибраний Блок",
+            lblBlockSize: "Розмір Блоку",
+            lblBlockList: "Список Блоків",
+            btnGenerate: "📄 Згенерувати Текст",
+            lblCityCount: "Кількість Міст:",
+            lblOutput: "Вивід",
+            alertSelectBlock: "Спочатку виберіть блок!",
+            blockLabel: "Блок"
+        },
+        tr: {
+            lblLang: "Dil",
+            lblName: "Bölge Adı",
+            lblSeed: "Tohum",
+            lblSize: "Harita Boyutu (ızgara)",
+            btnAdd: "➕ Ekle",
+            btnDelete: "🗑️ Sil",
+            lblEditBlock: "📐 Seçili Bloğu Düzenle",
+            lblBlockSize: "Blok Boyutu",
+            lblBlockList: "Blok Listesi",
+            btnGenerate: "📄 Metin Oluştur",
+            lblCityCount: "Şehir Sayısı:",
+            lblOutput: "Çıktı",
+            alertSelectBlock: "Önce bir blok seçin!",
+            blockLabel: "Blok"
+        },
+        ar: {
+            lblLang: "اللغة",
+            lblName: "اسم المنطقة",
+            lblSeed: "البذرة",
+            lblSize: "حجم الخريطة (شبكة)",
+            btnAdd: "➕ إضافة",
+            btnDelete: "🗑️ حذف",
+            lblEditBlock: "📐 تعديل الكتلة المحددة",
+            lblBlockSize: "حجم الكتلة",
+            lblBlockList: "قائمة الكتل",
+            btnGenerate: "📄 إنشاء النص",
+            lblCityCount: "عدد المدن:",
+            lblOutput: "المخرجات",
+            alertSelectBlock: "اختر كتلة أولاً!",
+            blockLabel: "كتلة"
+        },
+        hi: {
+            lblLang: "भाषा",
+            lblName: "क्षेत्र का नाम",
+            lblSeed: "बीज",
+            lblSize: "मानचित्र आकार (ग्रिड)",
+            btnAdd: "➕ जोड़ें",
+            btnDelete: "🗑️ हटाएं",
+            lblEditBlock: "📐 चयनित ब्लॉक संपादित करें",
+            lblBlockSize: "ब्लॉक आकार",
+            lblBlockList: "ब्लॉक सूची",
+            btnGenerate: "📄 टेक्स्ट जनरेट करें",
+            lblCityCount: "शहर गिनती:",
+            lblOutput: "आउटपुट",
+            alertSelectBlock: "पहले एक ब्लॉक चुनें!",
+            blockLabel: "ब्लॉक"
+        },
+        bn: {
+            lblLang: "ভাষা",
+            lblName: "অঞ্চলের নাম",
+            lblSeed: "বীজ",
+            lblSize: "মানচিত্রের আকার (গ্রিড)",
+            btnAdd: "➕ যোগ করুন",
+            btnDelete: "🗑️ মুছুন",
+            lblEditBlock: "📐 নির্বাচিত ব্লক সম্পাদনা করুন",
+            lblBlockSize: "ব্লকের আকার",
+            lblBlockList: "ব্লক তালিকা",
+            btnGenerate: "📄 টেক্সট তৈরি করুন",
+            lblCityCount: "শহর গণনা:",
+            lblOutput: "আউটপুট",
+            alertSelectBlock: "প্রথমে একটি ব্লক নির্বাচন করুন!",
+            blockLabel: "ব্লক"
+        },
+        zh: {
+            lblLang: "语言",
+            lblName: "区域名称",
+            lblSeed: "种子",
+            lblSize: "地图大小（网格）",
+            btnAdd: "➕ 添加",
+            btnDelete: "🗑️ 删除",
+            lblEditBlock: "📐 编辑选中的方块",
+            lblBlockSize: "方块大小",
+            lblBlockList: "方块列表",
+            btnGenerate: "📄 生成文本",
+            lblCityCount: "城市数量:",
+            lblOutput: "输出",
+            alertSelectBlock: "请先选择一个方块！",
+            blockLabel: "方块"
+        },
+        ja: {
+            lblLang: "言語",
+            lblName: "地域名",
+            lblSeed: "シード",
+            lblSize: "マップサイズ（グリッド）",
+            btnAdd: "➕ 追加",
+            btnDelete: "🗑️ 削除",
+            lblEditBlock: "📐 選択したブロックを編集",
+            lblBlockSize: "ブロックサイズ",
+            lblBlockList: "ブロックリスト",
+            btnGenerate: "📄 テキスト生成",
+            lblCityCount: "都市数:",
+            lblOutput: "出力",
+            alertSelectBlock: "先にブロックを選択してください！",
+            blockLabel: "ブロック"
+        },
+        ko: {
+            lblLang: "언어",
+            lblName: "지역 이름",
+            lblSeed: "시드",
+            lblSize: "맵 크기 (그리드)",
+            btnAdd: "➕ 추가",
+            btnDelete: "🗑️ 삭제",
+            lblEditBlock: "📐 선택한 블록 편집",
+            lblBlockSize: "블록 크기",
+            lblBlockList: "블록 목록",
+            btnGenerate: "📄 텍스트 생성",
+            lblCityCount: "도시 수:",
+            lblOutput: "출력",
+            alertSelectBlock: "먼저 블록을 선택하세요!",
+            blockLabel: "블록"
+        },
+        vi: {
+            lblLang: "Ngôn ngữ",
+            lblName: "Tên Vùng",
+            lblSeed: "Hạt giống",
+            lblSize: "Kích thước Bản đồ (lưới)",
+            btnAdd: "➕ Thêm",
+            btnDelete: "🗑️ Xóa",
+            lblEditBlock: "📐 Chỉnh sửa Khối đã Chọn",
+            lblBlockSize: "Kích thước Khối",
+            lblBlockList: "Danh sách Khối",
+            btnGenerate: "📄 Tạo Văn bản",
+            lblCityCount: "Số lượng Thành phố:",
+            lblOutput: "Đầu ra",
+            alertSelectBlock: "Vui lòng chọn một khối trước!",
+            blockLabel: "Khối"
+        },
+        th: {
+            lblLang: "ภาษา",
+            lblName: "ชื่อภูมิภาค",
+            lblSeed: "เมล็ด",
+            lblSize: "ขนาดแผนที่ (ตาราง)",
+            btnAdd: "➕ เพิ่ม",
+            btnDelete: "🗑️ ลบ",
+            lblEditBlock: "📐 แก้ไขบล็อกที่เลือก",
+            lblBlockSize: "ขนาดบล็อก",
+            lblBlockList: "รายการบล็อก",
+            btnGenerate: "📄 สร้างข้อความ",
+            lblCityCount: "จำนวนเมือง:",
+            lblOutput: "ผลลัพธ์",
+            alertSelectBlock: "กรุณาเลือกบล็อกก่อน!",
+            blockLabel: "บล็อก"
+        },
+        ms: {
+            lblLang: "Bahasa",
+            lblName: "Nama Wilayah",
+            lblSeed: "Benih",
+            lblSize: "Saiz Peta (grid)",
+            btnAdd: "➕ Tambah",
+            btnDelete: "🗑️ Padam",
+            lblEditBlock: "📐 Edit Blok Dipilih",
+            lblBlockSize: "Saiz Blok",
+            lblBlockList: "Senarai Blok",
+            btnGenerate: "📄 Jana Teks",
+            lblCityCount: "Bilangan Bandar:",
+            lblOutput: "Output",
+            alertSelectBlock: "Pilih blok dahulu!",
+            blockLabel: "Blok"
+        },
+        fil: {
+            lblLang: "Wika",
+            lblName: "Pangalan ng Rehiyon",
+            lblSeed: "Binhi",
+            lblSize: "Laki ng Mapa (grid)",
+            btnAdd: "➕ Idagdag",
+            btnDelete: "🗑️ Tanggalin",
+            lblEditBlock: "📐 I-edit ang Napiling Block",
+            lblBlockSize: "Laki ng Block",
+            lblBlockList: "Listahan ng Block",
+            btnGenerate: "📄 Gumawa ng Teksto",
+            lblCityCount: "Bilang ng Lungsod:",
+            lblOutput: "Output",
+            alertSelectBlock: "Pumili muna ng block!",
+            blockLabel: "Block"
+        },
+        sv: {
+            lblLang: "Språk",
+            lblName: "Regionsnamn",
+            lblSeed: "Frö",
+            lblSize: "Kartstorlek (rutnät)",
+            btnAdd: "➕ Lägg till",
+            btnDelete: "🗑️ Ta bort",
+            lblEditBlock: "📐 Redigera Valt Block",
+            lblBlockSize: "Blockstorlek",
+            lblBlockList: "Blocklista",
+            btnGenerate: "📄 Generera Text",
+            lblCityCount: "Antal Städer:",
+            lblOutput: "Utdata",
+            alertSelectBlock: "Välj ett block först!",
+            blockLabel: "Block"
+        },
+        da: {
+            lblLang: "Sprog",
+            lblName: "Regionsnavn",
+            lblSeed: "Frø",
+            lblSize: "Kortstørrelse (gitter)",
+            btnAdd: "➕ Tilføj",
+            btnDelete: "🗑️ Slet",
+            lblEditBlock: "📐 Rediger Valgt Blok",
+            lblBlockSize: "Blokstørrelse",
+            lblBlockList: "Blokliste",
+            btnGenerate: "📄 Generer Tekst",
+            lblCityCount: "Antal Byer:",
+            lblOutput: "Output",
+            alertSelectBlock: "Vælg en blok først!",
+            blockLabel: "Blok"
+        },
+        no: {
+            lblLang: "Språk",
+            lblName: "Regionsnavn",
+            lblSeed: "Frø",
+            lblSize: "Kartstørrelse (rutenett)",
+            btnAdd: "➕ Legg til",
+            btnDelete: "🗑️ Slett",
+            lblEditBlock: "📐 Rediger Valgt Blokk",
+            lblBlockSize: "Blokkstørrelse",
+            lblBlockList: "Blokkliste",
+            btnGenerate: "📄 Generer Tekst",
+            lblCityCount: "Antall Byer:",
+            lblOutput: "Utdata",
+            alertSelectBlock: "Velg en blokk først!",
+            blockLabel: "Blokk"
+        },
+        fi: {
+            lblLang: "Kieli",
+            lblName: "Alueen Nimi",
+            lblSeed: "Siemen",
+            lblSize: "Kartan Koko (ruudukko)",
+            btnAdd: "➕ Lisää",
+            btnDelete: "🗑️ Poista",
+            lblEditBlock: "📐 Muokkaa Valittua Lohkoa",
+            lblBlockSize: "Lohkon Koko",
+            lblBlockList: "Lohkolista",
+            btnGenerate: "📄 Luo Teksti",
+            lblCityCount: "Kaupunkien Määrä:",
+            lblOutput: "Tuloste",
+            alertSelectBlock: "Valitse ensin lohko!",
+            blockLabel: "Lohko"
+        },
+        el: {
+            lblLang: "Γλώσσα",
+            lblName: "Όνομα Περιοχής",
+            lblSeed: "Σπόρος",
+            lblSize: "Μέγεθος Χάρτη (πλέγμα)",
+            btnAdd: "➕ Προσθήκη",
+            btnDelete: "🗑️ Διαγραφή",
+            lblEditBlock: "📐 Επεξεργασία Επιλεγμένου Μπλοκ",
+            lblBlockSize: "Μέγεθος Μπλοκ",
+            lblBlockList: "Λίστα Μπλοκ",
+            btnGenerate: "📄 Δημιουργία Κειμένου",
+            lblCityCount: "Αριθμός Πόλεων:",
+            lblOutput: "Έξοδος",
+            alertSelectBlock: "Επιλέξτε πρώτα ένα μπλοκ!",
+            blockLabel: "Μπλοκ"
+        },
+        cs: {
+            lblLang: "Jazyk",
+            lblName: "Název Regionu",
+            lblSeed: "Semínko",
+            lblSize: "Velikost Mapy (mřížka)",
+            btnAdd: "➕ Přidat",
+            btnDelete: "🗑️ Smazat",
+            lblEditBlock: "📐 Upravit Vybraný Blok",
+            lblBlockSize: "Velikost Bloku",
+            lblBlockList: "Seznam Bloků",
+            btnGenerate: "📄 Vygenerovat Text",
+            lblCityCount: "Počet Měst:",
+            lblOutput: "Výstup",
+            alertSelectBlock: "Nejprve vyberte blok!",
+            blockLabel: "Blok"
+        },
+        ro: {
+            lblLang: "Limbă",
+            lblName: "Numele Regiunii",
+            lblSeed: "Sămânță",
+            lblSize: "Dimensiunea Hărții (grilă)",
+            btnAdd: "➕ Adaugă",
+            btnDelete: "🗑️ Șterge",
+            lblEditBlock: "📐 Editează Blocul Selectat",
+            lblBlockSize: "Dimensiunea Blocului",
+            lblBlockList: "Lista Blocurilor",
+            btnGenerate: "📄 Generează Text",
+            lblCityCount: "Număr de Orașe:",
+            lblOutput: "Ieșire",
+            alertSelectBlock: "Selectați mai întâi un bloc!",
+            blockLabel: "Bloc"
+        },
+        hu: {
+            lblLang: "Nyelv",
+            lblName: "Régió Neve",
+            lblSeed: "Mag",
+            lblSize: "Térkép Mérete (rács)",
+            btnAdd: "➕ Hozzáadás",
+            btnDelete: "🗑️ Törlés",
+            lblEditBlock: "📐 Kiválasztott Blokk Szerkesztése",
+            lblBlockSize: "Blokk Mérete",
+            lblBlockList: "Blokklista",
+            btnGenerate: "📄 Szöveg Generálása",
+            lblCityCount: "Városok Száma:",
+            lblOutput: "Kimenet",
+            alertSelectBlock: "Először válasszon ki egy blokkot!",
+            blockLabel: "Blokk"
+        },
+        he: {
+            lblLang: "שפה",
+            lblName: "שם האזור",
+            lblSeed: "זרע",
+            lblSize: "גודל המפה (רשת)",
+            btnAdd: "➕ הוסף",
+            btnDelete: "🗑️ מחק",
+            lblEditBlock: "📐 ערוך בלוק נבחר",
+            lblBlockSize: "גודל הבלוק",
+            lblBlockList: "רשימת בלוקים",
+            btnGenerate: "📄 צור טקסט",
+            lblCityCount: "מספר ערים:",
+            lblOutput: "פלט",
+            alertSelectBlock: "בחר בלוק קודם!",
+            blockLabel: "בלוק"
+        },
+        fa: {
+            lblLang: "زبان",
+            lblName: "نام منطقه",
+            lblSeed: "بذر",
+            lblSize: "اندازه نقشه (شبکه)",
+            btnAdd: "➕ افزودن",
+            btnDelete: "🗑️ حذف",
+            lblEditBlock: "📐 ویرایش بلوک انتخاب شده",
+            lblBlockSize: "اندازه بلوک",
+            lblBlockList: "لیست بلوک‌ها",
+            btnGenerate: "📄 ایجاد متن",
+            lblCityCount: "تعداد شهرها:",
+            lblOutput: "خروجی",
+            alertSelectBlock: "لطفاً ابتدا یک بلوک انتخاب کنید!",
+            blockLabel: "بلوک"
+        }
+    };
+
+    function changeLanguage() {
+        currentLang = document.getElementById("lang").value;
+        const t = translations[currentLang];
+
+        document.getElementById("lblLang").textContent = t.lblLang;
+        document.getElementById("lblName").textContent = t.lblName;
+        document.getElementById("lblSeed").textContent = t.lblSeed;
+        document.getElementById("lblSize").textContent = t.lblSize;
+        document.getElementById("btnAdd").textContent = t.btnAdd;
+        document.getElementById("btnDelete").textContent = t.btnDelete;
+        document.getElementById("lblEditBlock").textContent = t.lblEditBlock;
+        document.getElementById("lblBlockSize").childNodes[0].textContent = t.lblBlockSize + " ";
+        document.getElementById("lblBlockList").textContent = t.lblBlockList;
+        document.getElementById("btnGenerate").textContent = t.btnGenerate;
+        document.getElementById("lblCityCount").textContent = t.lblCityCount;
+        document.getElementById("lblOutput").textContent = t.lblOutput;
+
+        updateBlockList();
+    }
 
     const gridContainer = document.getElementById("gridContainer");
     const grid = document.getElementById("grid");
@@ -222,31 +807,39 @@
     const blockList = document.getElementById("blockList");
     const blockSizeInput = document.getElementById("blockSize");
 
+    function updateCityCount() {
+        document.getElementById("countValue").textContent = blocks.length;
+    }
+
     // Hitung ukuran cell berdasarkan ukuran map agar muat dalam container
     function calculateCellSize() {
         const containerSize = 580; // Ukuran maksimal grid
         size = parseInt(document.getElementById("size").value) || 12;
+        size = Math.max(4, size); // Minimal 4
+
         cellSize = Math.floor(containerSize / size);
-        cellSize = Math.max(cellSize, 10); // Minimal 10px per cell
+        cellSize = Math.max(cellSize, 4); // Minimal 4px per cell agar tetap terlihat
     }
 
     function buildGrid() {
         calculateCellSize();
 
-        // Hapus cells lama, pertahankan blocks
-        const existingBlocks = grid.querySelectorAll('.block');
+        // Hapus cells lama
         grid.innerHTML = "";
 
         grid.style.gridTemplateColumns = `repeat(${size}, ${cellSize}px)`;
         grid.style.width = size * cellSize + "px";
         grid.style.height = size * cellSize + "px";
 
-        // Buat cells
+        // Buat cells - untuk ukuran sangat besar, gunakan border lebih tipis
+        const borderStyle = cellSize <= 6 ? '0.5px solid #ddd' : '1px solid #ccc';
+
         for (let i = 0; i < size * size; i++) {
             const c = document.createElement("div");
             c.className = "cell";
             c.style.width = cellSize + "px";
             c.style.height = cellSize + "px";
+            c.style.border = borderStyle;
             grid.appendChild(c);
         }
 
@@ -260,6 +853,10 @@
             b.x = Math.min(b.x, Math.max(0, maxX));
             b.y = Math.min(b.y, Math.max(0, maxY));
 
+            // Jika ukuran blok lebih besar dari grid, perkecil
+            if (b.w > size) b.w = size;
+            if (b.h > size) b.h = size;
+
             updateBlockPosition(b);
         });
 
@@ -271,7 +868,20 @@
         block.element.style.top = (block.y * cellSize) + "px";
         block.element.style.width = (block.w * cellSize) + "px";
         block.element.style.height = (block.h * cellSize) + "px";
-        block.element.innerHTML = `<span class="coords">${block.x},${block.y}</span><span class="size-label">${block.w}x${block.h}</span>`;
+
+        // Dinamis font size berdasarkan ukuran block
+        const blockPixelSize = block.w * cellSize;
+        let fontSize = Math.max(6, Math.min(12, Math.floor(blockPixelSize / 4)));
+        let labelFontSize = Math.max(5, fontSize - 2);
+
+        // Sembunyikan text jika terlalu kecil
+        if (blockPixelSize < 20) {
+            block.element.innerHTML = '';
+        } else if (blockPixelSize < 35) {
+            block.element.innerHTML = `<span class="coords" style="font-size:${fontSize}px">${block.x},${block.y}</span>`;
+        } else {
+            block.element.innerHTML = `<span class="coords" style="font-size:${fontSize}px">${block.x},${block.y}</span><span class="size-label" style="font-size:${labelFontSize}px">${block.w}x${block.h}</span>`;
+        }
     }
 
     function addBlock() {
@@ -352,7 +962,7 @@
 
     function deleteSelectedBlock() {
         if (!selectedBlock) {
-            alert("Pilih blok terlebih dahulu!");
+            alert(translations[currentLang].alertSelectBlock);
             return;
         }
 
@@ -373,17 +983,20 @@
 
     function updateBlockList() {
         blockList.innerHTML = "";
+        const t = translations[currentLang];
 
         blocks.forEach((block, index) => {
             const item = document.createElement("div");
             item.className = "block-item" + (selectedBlock === block ? " selected" : "");
             item.innerHTML = `
-                <span>Blok ${index + 1}: (${block.x},${block.y}) ${block.w}x${block.h}</span>
+                <span>${t.blockLabel} ${index + 1}: (${block.x},${block.y}) ${block.w}x${block.h}</span>
                 <button onclick="event.stopPropagation(); deleteBlockByIndex(${index})">✖</button>
             `;
             item.onclick = () => selectBlock(block);
             blockList.appendChild(item);
         });
+
+        updateCityCount();
     }
 
     function deleteBlockByIndex(index) {
