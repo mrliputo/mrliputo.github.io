@@ -187,18 +187,7 @@
     <div class="block-controls" id="blockControls">
         <h4 id="lblEditBlock">📐 Edit Blok Terpilih</h4>
         <label id="lblBlockSize">Ukuran Blok
-            <select id="blockSize" onchange="updateBlockSize()">
-                <option value="1">1x1</option>
-                <option value="2" selected>2x2</option>
-                <option value="3">3x3</option>
-                <option value="4">4x4</option>
-                <option value="5">5x5</option>
-                <option value="6">6x6</option>
-                <option value="7">7x7</option>
-                <option value="8">8x8</option>
-                <option value="9">9x9</option>
-                <option value="10">10x10</option>
-            </select>
+            <input type="number" id="blockSize" min="1" value="2" onchange="updateBlockSize()">
         </label>
     </div>
 
