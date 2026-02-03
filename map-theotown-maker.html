@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TheoTown Region Maker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            gap: 20px;
+            background: #222;
+            color: #fff;
+            margin: 10px;
+        }
+
+        #panel {
+            width: 280px;
+            flex-shrink: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+
+        input, button, textarea, select {
+            width: 100%;
+            margin-top: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-row button {
+            flex: 1;
+        }
+
+        #gridContainer {
+            width: 600px;
+            height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #grid {
+            display: grid;
+            background: #eee;
+            position: relative;
+        }
+
+        .cell {
+            border: 1px solid #ccc;
+            background: #fff;
+            box-sizing: border-box;
+        }
+
+        .block {
+            position: absolute;
+            background: rgba(0, 100, 200, 0.8);
+            cursor: move;
+            box-sizing: border-box;
+            color: #fff;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border: 2px solid #0af;
+            border-radius: 3px;
+            user-select: none;
+        }
+
+        .block:hover {
+            background: rgba(0, 150, 255, 0.9);
+        }
+
+        .block.selected {
+            border-color: #ff0;
+            background: rgba(200, 150, 0, 0.8);
+        }
+
+        .block .coords {
+            font-weight: bold;
+        }
+
+        .block .size-label {
+            font-size: 8px;
+            opacity: 0.8;
+        }
+
+        .block-controls {
+            margin-top: 15px;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .block-controls.active {
+            display: block;
+        }
+
+        .block-controls h4 {
+            margin: 0 0 10px 0;
+            color: #0af;
+        }
+
+        #blockList {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #333;
+            border-radius: 5px;
+        }
+
+        .block-item {
+            padding: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+            cursor: pointer;
+        }
+
+        .block-item:hover {
+            background: #444;
+        }
+
+        .block-item.selected {
+            background: #555;
+        }
+
+        .block-item button {
+            width: auto;
+            padding: 4px 8px;
+            background: #c00;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+        }
+
+        .block-item button:hover {
+            background: #f00;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="panel">
+    <h3>🏙️ TheoTown Region Maker</h3>
+
+    <label>Nama Wilayah</label>
+    <input id="name" value="Test Map">
+
+    <label>Seed</label>
+    <input id="seed" value="12345678">
+
+    <label>Ukuran Peta (grid)</label>
+    <input id="size" type="number" value="12" min="4" max="100">
+
+    <label><input type="checkbox" id="desert"> Desert</label>
+    <label><input type="checkbox" id="terrain"> Terrain</label>
+    <label><input type="checkbox" id="trees"> Trees</label>
+    <label><input type="checkbox" id="decoration" checked> Decoration</label>
+
+    <div class="btn-row">
+        <button onclick="addBlock()">➕ Tambah</button>
+        <button onclick="deleteSelectedBlock()">🗑️ Hapus</button>
+    </div>
+
+    <div class="block-controls" id="blockControls">
+        <h4>📐 Edit Blok Terpilih</h4>
+        <label>Ukuran Blok
+            <select id="blockSize" onchange="updateBlockSize()">
+                <option value="1">1x1</option>
+                <option value="2" selected>2x2</option>
+                <option value="3">3x3</option>
+                <option value="4">4x4</option>
+                <option value="5">5x5</option>
+                <option value="6">6x6</option>
+            </select>
+        </label>
+    </div>
+
+    <label>Daftar Blok</label>
+    <div id="blockList"></div>
+
+    <button onclick="generate()" style="margin-top: 15px; background: #080; color: #fff; border: none;">📄 Generate Text</button>
+
+    <label>Output</label>
+    <textarea id="output" rows="8"></textarea>
+</div>
+
+<div id="gridContainer">
+    <div id="grid"></div>
+</div>
+
+<script>
+    let size = 12;
+    let cellSize = 40;
+    let blocks = [];
+    let drag = null;
+    let selectedBlock = null;
+    let blockIdCounter = 0;
+
+    const gridContainer = document.getElementById("gridContainer");
+    const grid = document.getElementById("grid");
+    const blockControls = document.getElementById("blockControls");
+    const blockList = document.getElementById("blockList");
+    const blockSizeInput = document.getElementById("blockSize");
+
+    // Hitung ukuran cell berdasarkan ukuran map agar muat dalam container
+    function calculateCellSize() {
+        const containerSize = 580; // Ukuran maksimal grid
+        size = parseInt(document.getElementById("size").value) || 12;
+        cellSize = Math.floor(containerSize / size);
+        cellSize = Math.max(cellSize, 10); // Minimal 10px per cell
+    }
+
+    function buildGrid() {
+        calculateCellSize();
+
+        // Hapus cells lama, pertahankan blocks
+        const existingBlocks = grid.querySelectorAll('.block');
+        grid.innerHTML = "";
+
+        grid.style.gridTemplateColumns = `repeat(${size}, ${cellSize}px)`;
+        grid.style.width = size * cellSize + "px";
+        grid.style.height = size * cellSize + "px";
+
+        // Buat cells
+        for (let i = 0; i < size * size; i++) {
+            const c = document.createElement("div");
+            c.className = "cell";
+            c.style.width = cellSize + "px";
+            c.style.height = cellSize + "px";
+            grid.appendChild(c);
+        }
+
+        // Update posisi dan ukuran semua blocks
+        blocks.forEach(b => {
+            grid.appendChild(b.element);
+
+            // Pastikan blok tidak keluar dari grid
+            const maxX = size - b.w;
+            const maxY = size - b.h;
+            b.x = Math.min(b.x, Math.max(0, maxX));
+            b.y = Math.min(b.y, Math.max(0, maxY));
+
+            updateBlockPosition(b);
+        });
+
+        updateBlockList();
+    }
+
+    function updateBlockPosition(block) {
+        block.element.style.left = (block.x * cellSize) + "px";
+        block.element.style.top = (block.y * cellSize) + "px";
+        block.element.style.width = (block.w * cellSize) + "px";
+        block.element.style.height = (block.h * cellSize) + "px";
+        block.element.innerHTML = `<span class="coords">${block.x},${block.y}</span><span class="size-label">${block.w}x${block.h}</span>`;
+    }
+
+    function addBlock() {
+        const block = {
+            id: ++blockIdCounter,
+            x: 0,
+            y: 0,
+            w: 2,
+            h: 2,
+            element: null
+        };
+
+        const el = document.createElement("div");
+        el.className = "block";
+        block.element = el;
+
+        el.onmousedown = e => {
+            if (e.button === 0) { // Left click
+                selectBlock(block);
+                drag = {
+                    block: block,
+                    ox: e.offsetX,
+                    oy: e.offsetY
+                };
+                e.preventDefault();
+            }
+        };
+
+        // Double click untuk edit
+        el.ondblclick = () => {
+            selectBlock(block);
+        };
+
+        grid.appendChild(el);
+        blocks.push(block);
+
+        updateBlockPosition(block);
+        selectBlock(block);
+        updateBlockList();
+    }
+
+    function selectBlock(block) {
+        // Deselect previous
+        if (selectedBlock) {
+            selectedBlock.element.classList.remove('selected');
+        }
+
+        selectedBlock = block;
+
+        if (block) {
+            block.element.classList.add('selected');
+            blockControls.classList.add('active');
+            blockSizeInput.value = block.w; // w dan h selalu sama (kotak)
+        } else {
+            blockControls.classList.remove('active');
+        }
+
+        updateBlockList();
+    }
+
+    function updateBlockSize() {
+        if (!selectedBlock) return;
+
+        let newSize = parseInt(blockSizeInput.value) || 2;
+
+        // Validasi ukuran agar tidak keluar grid
+        const maxSize = Math.min(size - selectedBlock.x, size - selectedBlock.y);
+        newSize = Math.max(1, Math.min(newSize, maxSize));
+
+        selectedBlock.w = newSize;
+        selectedBlock.h = newSize;
+
+        blockSizeInput.value = newSize;
+
+        updateBlockPosition(selectedBlock);
+        updateBlockList();
+    }
+
+    function deleteSelectedBlock() {
+        if (!selectedBlock) {
+            alert("Pilih blok terlebih dahulu!");
+            return;
+        }
+
+        deleteBlock(selectedBlock);
+    }
+
+    function deleteBlock(block) {
+        block.element.remove();
+        blocks = blocks.filter(b => b !== block);
+
+        if (selectedBlock === block) {
+            selectedBlock = null;
+            blockControls.classList.remove('active');
+        }
+
+        updateBlockList();
+    }
+
+    function updateBlockList() {
+        blockList.innerHTML = "";
+
+        blocks.forEach((block, index) => {
+            const item = document.createElement("div");
+            item.className = "block-item" + (selectedBlock === block ? " selected" : "");
+            item.innerHTML = `
+                <span>Blok ${index + 1}: (${block.x},${block.y}) ${block.w}x${block.h}</span>
+                <button onclick="event.stopPropagation(); deleteBlockByIndex(${index})">✖</button>
+            `;
+            item.onclick = () => selectBlock(block);
+            blockList.appendChild(item);
+        });
+    }
+
+    function deleteBlockByIndex(index) {
+        if (index >= 0 && index < blocks.length) {
+            deleteBlock(blocks[index]);
+        }
+    }
+
+    // Event listeners
+    document.onmousemove = e => {
+        if (!drag) return;
+
+        const rect = grid.getBoundingClientRect();
+        let x = e.clientX - rect.left - drag.ox;
+        let y = e.clientY - rect.top - drag.oy;
+
+        // Snap to grid
+        let gridX = Math.round(x / cellSize);
+        let gridY = Math.round(y / cellSize);
+
+        // Clamp to bounds
+        gridX = Math.max(0, Math.min(gridX, size - drag.block.w));
+        gridY = Math.max(0, Math.min(gridY, size - drag.block.h));
+
+        drag.block.x = gridX;
+        drag.block.y = gridY;
+
+        updateBlockPosition(drag.block);
+    };
+
+    document.onmouseup = () => {
+        if (drag) {
+            updateBlockList();
+        }
+        drag = null;
+    };
+
+    // Click on grid to deselect
+    grid.onclick = e => {
+        if (e.target === grid || e.target.classList.contains('cell')) {
+            selectBlock(null);
+        }
+    };
+
+    // Keyboard shortcut
+    document.onkeydown = e => {
+        if (e.key === 'Delete' && selectedBlock) {
+            deleteSelectedBlock();
+        }
+    };
+
+    function generate() {
+        let maps = [];
+
+        blocks.forEach(b => {
+            maps.push(b.x, b.y, b.w);
+        });
+
+        const text = `cr:{name:"${name.value}", seed:"${seed.value}", "desert":${desert.checked}, "terrain":${terrain.checked}, "trees":${trees.checked}, "decoration":${decoration.checked}, size:${size}, maps: [${maps.join(",")}]}`;
+
+        output.value = text;
+    }
+
+    document.getElementById("size").onchange = buildGrid;
+
+    // Initialize
+    buildGrid();
+</script>
+
+</body>
+</html>
