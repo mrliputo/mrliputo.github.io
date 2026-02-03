@@ -885,12 +885,18 @@
     }
 
     function addBlock() {
+        // Ambil size dari blok terakhir atau dari dropdown, default 2
+        let lastSize = 2;
+        if (blocks.length > 0) {
+            lastSize = blocks[blocks.length - 1].w;
+        }
+
         const block = {
             id: ++blockIdCounter,
             x: 0,
             y: 0,
-            w: 2,
-            h: 2,
+            w: lastSize,
+            h: lastSize,
             element: null
         };
 
